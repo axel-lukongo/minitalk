@@ -6,7 +6,7 @@
 /*   By: alukongo <alukongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/05 00:58:43 by alukongo          #+#    #+#             */
-/*   Updated: 2022/02/19 15:48:16 by alukongo         ###   ########.fr       */
+/*   Updated: 2022/02/19 18:54:05 by alukongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
  * @brief 
  * i = the index of my binary digits
  * av & (1 << i) = i make a logical operator "AND" in digits binary of charactor av with a digit who gone be = 1 in position i
- * @param pid = the pid of the client
+ * @param pid = the pid of the server
  * @param av = the charactor who i want send
  * if av & (1 << i) = 1 i send SIGUSR1 else i send SIGUSR2
  * i use a sleep because i want give some time to my server to received the signal and to treat it
@@ -49,7 +49,12 @@ void	ft_send_signal(int pid, char av)
 	}
 	usleep(100);
 }
-
+/**
+ * comfirmation
+ * line 62 if i receveid SIGUSR1 it mean i do not have yet send all char of av[1] so i increment nb_char
+ * line 64 if i send all the char and i received SIGUSR2 it mean i send a '\0', so i print the number of char.
+ * @param signal is the value of the signal who i received
+ */
 void	confirmation(int signal)
 {
 	static int	nb_char = 0;
@@ -67,7 +72,14 @@ void	confirmation(int signal)
 }
 
 
-
+/**
+ * error 
+ * line 88 i verify if i have 3 argument, !not more and not less!
+ * line 95 i verify if i only have a digit in my pid
+ * line 102 i check if my pid is bigger than 0 
+ * @param ac is the number of argument
+ * @param av my string
+ */
 void error(int ac, char *av)
 {
 	int i;
