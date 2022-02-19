@@ -1,7 +1,7 @@
 NAME = minitalk
 
-SRCS_SERVER = server.c
-SRCS_CLIENT = client.c
+SRCS_SERVER = server.c utils.c
+SRCS_CLIENT = client.c utils.c
 
 CC = cc
 RM = rm -f
@@ -18,7 +18,7 @@ CLIENT = client
 
 all: $(NAME)
 
-$(NAME): $(SERVER) $(CLIENT)
+$(NAME): $(SERVER) $(CLIENT) $(UTILS)
 
 $(SERVER): $(OBJS_SERVER)
 		$(CC) -o $(SERVER) $(OBJS_SERVER)

@@ -6,38 +6,16 @@
 /*   By: alukongo <alukongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/05 00:58:43 by alukongo          #+#    #+#             */
-/*   Updated: 2022/02/15 17:53:18 by alukongo         ###   ########.fr       */
+/*   Updated: 2022/02/19 15:48:16 by alukongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include<stdio.h>
-#include<signal.h>
-#include<unistd.h>
-#include<stdlib.h>
-#include<sys/types.h> 
-
-int	ft_atoi(char *str)
-{
-	long	i;
-	int		signe;
-	int		nbr;
-
-	nbr = 0;
-	signe = 1;
-	i = 0;
-	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
-		i++;
-	if (str[i] == '+' || str[i] == '-')
-	{
-		if (str[i] == '-')
-			signe = signe * (-1);
-		i++;
-	}
-	while (str[i] >= '0' && str[i] <= '9')
-		nbr = nbr * 10 + str[i++] - 48;
-	nbr = nbr * signe;
-	return (nbr);
-}
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include "minitalk.h"
+#include <sys/types.h> 
 
 /**
  * @brief 
@@ -80,19 +58,15 @@ void	confirmation(int signal)
 		nb_char++;
 	else
 	{
-		write(1, &nb_char, 5);
+		write(1, "nb of char = ", 13);
+		ft_putnbr(nb_char);
+		ft_putchar('\n', 1);
 		write(1, "char correctly receved", 23);
 		exit(1);
 	}
 }
 
-int	ft_isdigit(int c)
-{
-	if (c >= 48 && c <= 57)
-		return (1);
-	else
-		return (0);
-}
+
 
 void error(int ac, char *av)
 {
@@ -134,6 +108,7 @@ int	main(int ac, char **av)
 		i++;
 	}
 	ft_send_signal(ft_atoi(av[1]), av[2][i]);
-	sleep(1);
+	while(1)
+		pause();
 	return (0);
 }
