@@ -6,7 +6,7 @@
 /*   By: alukongo <alukongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/05 00:58:43 by alukongo          #+#    #+#             */
-/*   Updated: 2022/02/19 19:13:57 by alukongo         ###   ########.fr       */
+/*   Updated: 2022/02/21 16:27:28 by alukongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,39 +20,50 @@
 /**
  * @brief 
  * i = the index of my binary digits
- * av & (1 << i) = i make a logical operator "AND" in digits binary of charactor av with a digit who gone be = 1 in position i
+ * av & (1 << i) = i make a logical operator "AND" in digits binary
+  of charactor av with a digit who gone be = 1 in position i
+ 
  * @param pid = the pid of the server
  * @param av = the charactor who i want send
  * if av & (1 << i) = 1 i send SIGUSR1 else i send SIGUSR2
- * i use a sleep because i want give some time to my server to received the signal and to treat it
+ 
+ * i use a usleep because i want give some time to my server
+   to received the signal and to treat it
  */
-void	ft_send_signal(int pid, char av)
+static void	ft_send_signal(int pid, char *av)
 {
-	int	i;
-	int	ret;
+	int		i;
 
-	ret = 1;
-	i = 0;
-	while (i <= 7)
+	while (*av)
 	{
-		if (av & (1 << i))
-			ret = kill(pid, SIGUSR1);
-		else
-			ret = kill(pid, SIGUSR2);
-		if (ret)
+		i = 8;
+		while (i--)
 		{
-			write(1, "Error sending signal to server\n", 32);
-			exit(1);
+			if (*av >> i & 1 >> 0)
+				kill(pid, SIGUSR2);
+			else
+				kill(pid, SIGUSR1);
+			usleep(100);
 		}
-		usleep(100);
-		i++;
+		av++;
 	}
-	usleep(100);
+	i = 8;
+	while (i--)
+	{
+		kill(pid, SIGUSR1);
+		usleep(100);
+	}
 }
+
 /**
  * comfirmation
- * line 62 if i receveid SIGUSR1 it mean i do not have yet send all char of av[1] so i increment nb_char
- * line 64 if i send all the char and i received SIGUSR2 it mean i send a '\0', so i print the number of char.
+ 
+ * line 74 if i receveid SIGUSR1 it mean i do not have yet 
+  send all char of av[1] so i increment nb_char
+ 
+ * line 76 if i send all the char and i received SIGUSR2,
+  it mean i send a '\0', so i print the number of char.
+ 
  * @param signal is the value of the signal who i received
  */
 void	confirmation(int signal)
@@ -65,24 +76,24 @@ void	confirmation(int signal)
 	{
 		write(1, "nb of char = ", 13);
 		ft_putnbr(nb_char);
-		ft_putchar('\n', 1);
+		ft_putchar_fd('\n', 1);
 		write(1, "char correctly receved", 23);
-		exit(1);
+		exit(0);
 	}
 }
 
-
 /**
+
  * error 
- * line 88 i verify if i have 3 argument, !not more and not less!
- * line 95 i verify if i only have a digit in my pid
- * line 102 i check if my pid is bigger than 0 
+ * line 100 i verify if i have 3 argument, !not more and not less!
+ * line 107 i verify if i only have a digit in my pid
+ * line 114 i check if my pid is bigger than 0 
  * @param ac is the number of argument
  * @param av my string
  */
-void error(int ac, char *av)
+void	error(int ac, char *av)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (ac != 3)
@@ -90,9 +101,9 @@ void error(int ac, char *av)
 		write(1, "Usage : ./client <pid> <message>\n", 33);
 		exit(1);
 	}
-	while(av[i])
+	while (av[i])
 	{
-		if(!ft_isdigit(av[i]))
+		if (!ft_isdigit(av[i]))
 		{
 			write(1, "PID is not a valid number\n", 26);
 			exit(1);
@@ -108,19 +119,11 @@ void error(int ac, char *av)
 
 int	main(int ac, char **av)
 {
-	int	i;
-
-	i = 0;
 	error(ac, av[1]);
-	while (av[2][i])
-	{
-		signal(SIGUSR1, confirmation);
-		signal(SIGUSR2, confirmation);
-		ft_send_signal(ft_atoi(av[1]), av[2][i]);
-		i++;
-	}
-	ft_send_signal(ft_atoi(av[1]), av[2][i]);
-	while(1)
+	signal(SIGUSR1, confirmation);
+	signal(SIGUSR2, confirmation);
+	ft_send_signal(ft_atoi(av[1]), av[2]);
+	while (1)
 		pause();
 	return (0);
 }
